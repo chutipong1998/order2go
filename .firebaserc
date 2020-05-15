@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "order-with-local",
+    "tew": "testlocall",
+    "test": "testlocall"
+  }
+}
