@@ -30,10 +30,10 @@
         </div>
 
         <div v-if="order_type.length > 0 && order_type[selected_order_type].name === 'delivery'">
-          <div class="container-input minimal" v-for="(here, index) in locate" :key="index">
-            <div class="col-md-4 col-lg-4 col-sm-4">
+          <!-- <div class="container-input minimal" v-for="(here, index) in locate" :key="index"> -->
+            <!-- <div class="col-md-4 col-lg-4 col-sm-4">
               <label class="location-label">
-                <input type="radio" name="product" v-model="selected_address" :value="here" class="card-input-element" :checked="index === defaultAdress">
+                <input type="radio" name="product" v-model="selected_address" :value="here" class="card-input-element" :checked="selected_address === 0">
 
                 <div class="panel panel-default card-input" style="border: 1px solid lightgrey">
                   <div class="card-detail" style="background-color: white;">
@@ -51,17 +51,69 @@
                   </router-link>
                 </div>
               </label>
+            </div> -->
+          <div class="container-input minimal">
+            <div class="container-input minimal">
+              <p style="text-align:left">
+                บ้านเลขที่ <span style="color:red;">*</span>
+              </p>
+              <input class="input" v-model="locat" placeholder="บ้านเลขที่" rows="1" />
             </div>
-
+            <div class="container-input minimal">
+              <p style="text-align:left">
+                อาคาร/หมู่บ้าน <span style="color:red;">*</span>
+              </p>
+              <input class="input" v-model="village" placeholder="อาคาร/หมู่บ้าน" rows="1" />
+            </div>
+            <div class="container-input minimal">
+              <p style="text-align:left">
+                ซอย
+              </p>
+              <input class="input" v-model="alley" placeholder="ซอย" rows="1" />
+            </div>
+            <div class="container-input minimal">
+              <p style="text-align:left">
+                รายละเอียด
+              </p>
+              <textarea class="textarea" v-model="detail" placeholder="รายละเอียดการเดินทาง เช่น ชั้น หรือเลขที่ห้อง" rows="5" />
+            </div>
+            <div class="container menu text-align-center">
+              <section class="section-map">
+                <div class="showInfo-map">
+                    <div><img src="../assets/images/home.png" alt="" width="50%"></div>
+                    <div class="text-map"><h3>ยังไม่มีตำแหน่งจัดส่งบนแผนที่</h3></div>
+                    <router-link :to="{ name: 'googlemap' }">
+                      <button class="btn button-map" type="button">ระบุตำแหน่ง</button>
+                    </router-link>
+                </div>
+              </section>
+            </div>
+            <!-- <div class="container-input">
+              <label style="padding: 3%;">
+                <router-link :to="{ name: 'address' }">
+                  <button class="btn-cancle" type="button">
+                    ยกเลิก
+                  </button>
+                </router-link>
+              </label>
+              <label style="padding: 3%;">
+                <router-link :to="{ name: 'address' }">
+                  <button class="btn-add" type="button" v-on:click="addAddress()" :disabled="locat === '' || village === '' || alley === ''">
+                    เพิ่มที่อยู่&nbsp;
+                    <i class="fas fa-plus fa-lg"></i>
+                  </button>
+                </router-link>
+              </label>
+            </div> -->
           </div>
-          <div style="padding: 3%;">
+          <!-- <div style="padding: 3%;">
             <router-link :to="{ name: 'addAddress' }">
               <button class="btn" type="button">
                 เพิ่มที่อยู่&nbsp;
                 <i class="fas fa-plus fa-lg"></i>
               </button>
             </router-link>
-          </div>
+          </div> -->
         </div>
       </section>
       <div class="footer-space" />
@@ -94,7 +146,13 @@ export default {
       locate: '',
       name: '',
       phone: '',
-      defaultAdress: '',
+      defaultAdress: 0,
+      locat: '',
+      village: '',
+      alley: '',
+      detail: '',
+      coordinates: null,
+      map_address: [],
       order_type: [
         {
           'name': 'delivery',
@@ -111,9 +169,14 @@ export default {
     }
   },
   created () {
+    this.selected_address = 0
     console.log(this.selected_address)
     this.address = this.$store.state.address
     this.subtotal = this.$store.state.subtotal
+
+    this.map_address = this.$store.state.map_address
+    this.coordinates = this.$store.state.coordinates
+    
     this.$http.get('https://asia-east2-testlocall.cloudfunctions.net/user', {params:
     { email: 'tew2@email', lineId: 'tew' }
     }).then((res) => {
@@ -123,6 +186,7 @@ export default {
         this.locate = this.$store.state.addresses.length === 0 ? res.data.data.addresses : this.$store.state.addresses
         this.address.phone = res.data.data.phones[Number(res.data.data.defaultPhone)]
         this.defaultAdress = res.data.data.defaultAdress
+        console.log('defaultAdress:', this.defaultAdress)
       }
     })
     // this.order_type = this.$store.state.order_type
