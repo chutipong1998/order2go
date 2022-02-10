@@ -19,7 +19,7 @@
   "dependencies": {
     "buefy": "^0.8.17",
     "google-fonts-webpack-plugin": "^0.4.4",
-    "node-sass": "^4.14.0",
+    "node-sass": "^7.0.0",
     "vue": "^2.5.2",
     "vue-content-loader": "^0.2.3",
     "vue-cookies": "^1.7.0",
